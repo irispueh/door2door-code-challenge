@@ -5,4 +5,5 @@ interface RideUpdatesView {
 
     fun updateRideStatus(status: String)
 
+    fun showRideAddresses(pickUpAddress: String, dropOffAddress: String)
 }

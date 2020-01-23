@@ -28,16 +28,23 @@ class RideUpdatesPresenterImp @Inject constructor(
     }
 
     private fun subscribeToBookingStatusUpdates() {
-        disposables.add(mainScreenInteractor.getBookingStatusUpdates(bookingStatusMapper)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                //todo
-                println("Status: ${it.status}")
-                rideUpdatesView.updateRideStatus(it.status)
-            }, {
-                Log.d(tag, "Error on getting status updates")
-            })
+        disposables.add(
+            mainScreenInteractor.getBookingStatusUpdates(bookingStatusMapper)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    //todo
+                    handleStatusUpdate(it)
+                }, {
+                    Log.d(tag, "Error on getting status updates")
+                })
         )
+    }
+
+    private fun handleStatusUpdate(bookingStatus: BookingStatusModel) {
+        if (bookingStatus.dropoffAddress != null && bookingStatus.pickupAddress != null) {
+            rideUpdatesView.showRideAddresses(bookingStatus.pickupAddress, bookingStatus.dropoffAddress)
+        }
+        rideUpdatesView.updateRideStatus(bookingStatus.status)
     }
 }

@@ -64,4 +64,13 @@ class RideUpdatesLayout : RelativeLayout, RideUpdatesView {
         val statusText = resources.getString(R.string.status, status)
         statusTextView.text = statusText
     }
+
+    override fun showRideAddresses(pickUpAddress: String, dropOffAddress: String) {
+        val pickUpTextView = findViewById<TextView>(R.id.pickUpAddressTextView)
+        val dropOffTextView = findViewById<TextView>(R.id.dropOffAddressTextView)
+        val pickUpText = resources.getString(R.string.pickup_at, pickUpAddress)
+        val dropOffText = resources.getString(R.string.dropoff_at, dropOffAddress)
+        pickUpTextView.text = pickUpText
+        dropOffTextView.text = dropOffText
+    }
 }
