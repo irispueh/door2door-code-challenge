@@ -13,27 +13,31 @@ import javax.inject.Inject
 class RideUpdatesPresenterImp @Inject constructor(
     private val rideUpdatesView: RideUpdatesView,
     private val mainScreenInteractor: MainScreenInteractor,
-    private val bookingStatusMapper: BookingStatusMapper) : RideUpdatesPresenter {
+    private val bookingStatusMapper: BookingStatusMapper
+) : RideUpdatesPresenter {
 
-  private val disposables = CompositeDisposable()
-  private val tag = RideUpdatesPresenterImp::class.simpleName
+    private val disposables = CompositeDisposable()
+    private val tag = RideUpdatesPresenterImp::class.simpleName
 
-  override fun viewAttached() {
-    subscribeToBookingStatusUpdates()
-  }
+    override fun viewAttached() {
+        subscribeToBookingStatusUpdates()
+    }
 
-  override fun viewDetached() {
-    disposables.dispose()
-  }
+    override fun viewDetached() {
+        disposables.dispose()
+    }
 
-  private fun subscribeToBookingStatusUpdates() {
-    disposables.add(mainScreenInteractor.getBookingStatusUpdates(bookingStatusMapper)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe({
-          //todo
-        }, {
-          Log.d(tag, "Error on getting status updates")
-        }))
-  }
+    private fun subscribeToBookingStatusUpdates() {
+        disposables.add(mainScreenInteractor.getBookingStatusUpdates(bookingStatusMapper)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                //todo
+                println("Status: ${it.status}")
+                rideUpdatesView.updateRideStatus(it.status)
+            }, {
+                Log.d(tag, "Error on getting status updates")
+            })
+        )
+    }
 }

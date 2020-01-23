@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.RelativeLayout
+import android.widget.TextView
 import io.door2door.mobile_code_challenge.R
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.dagger.DaggerRideUpdatesComponent
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.dagger.RideUpdatesModule
@@ -15,41 +16,52 @@ import javax.inject.Inject
 
 class RideUpdatesLayout : RelativeLayout, RideUpdatesView {
 
-  @Inject
-  lateinit var rideUpdatesPresenter: RideUpdatesPresenter
+    @Inject
+    lateinit var rideUpdatesPresenter: RideUpdatesPresenter
 
-  constructor(context: Context) : super(context) {
-    setUp(context)
-  }
+    constructor(context: Context) : super(context) {
+        setUp(context)
+    }
 
-  constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-    setUp(context)
-  }
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        setUp(context)
+    }
 
-  constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
-      context,
-      attrs,
-      defStyleAttr
-  ) {
-    setUp(context)
-  }
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        setUp(context)
+    }
 
-  private fun setUp(context: Context) {
-    LayoutInflater.from(context).inflate(R.layout.feature_ride_updates, this, true)
-    injectDependencies()
-  }
+    private fun setUp(context: Context) {
+        LayoutInflater.from(context).inflate(R.layout.feature_ride_updates, this, true)
+        injectDependencies()
+    }
 
-  private fun injectDependencies() {
-    DaggerRideUpdatesComponent.builder()
-        .mainScreenComponent((context as MainScreenActivity).mainScreenComponent)
-        .rideUpdatesModule(RideUpdatesModule(this))
-        .build()
-        .injectRideUpdatesView(this)
+    private fun injectDependencies() {
+        DaggerRideUpdatesComponent.builder()
+            .mainScreenComponent((context as MainScreenActivity).mainScreenComponent)
+            .rideUpdatesModule(RideUpdatesModule(this))
+            .build()
+            .injectRideUpdatesView(this)
+    }
 
-  }
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        rideUpdatesPresenter.viewAttached()
+    }
 
-  override fun onAttachedToWindow() {
-    super.onAttachedToWindow()
-    rideUpdatesPresenter.viewAttached()
-  }
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        rideUpdatesPresenter.viewDetached()
+    }
+
+    override fun updateRideStatus(status: String) {
+        val statusTextView = findViewById<TextView>(R.id.statusTextView)
+        statusTextView.visibility = View.VISIBLE
+        val statusText = resources.getString(R.string.status, status)
+        statusTextView.text = statusText
+    }
 }
