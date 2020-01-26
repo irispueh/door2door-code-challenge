@@ -8,7 +8,5 @@ interface MapView {
 
   fun clearMap()
 
-//  fun addLocationToRoute(location: LatLng)
-
   fun updateVehicleLocation(location: LatLng)
 }

@@ -9,8 +9,13 @@ import android.util.Property
 import android.view.LayoutInflater
 import android.view.animation.LinearInterpolator
 import android.widget.RelativeLayout
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import io.door2door.mobile_code_challenge.R
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.dagger.DaggerMapComponent
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.dagger.MapModule
@@ -18,6 +23,7 @@ import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.present
 import io.door2door.mobile_code_challenge.mainScreen.view.MainScreenActivity
 import kotlinx.android.synthetic.main.feature_map.view.*
 import javax.inject.Inject
+
 
 private const val MARKER_ANIMATION_DURATION = 1000L
 private const val VEHICLE_MARKER_ANCHOR = 0.5f
@@ -32,6 +38,8 @@ class MapLayout : MapView, RelativeLayout {
     private var markerPositionAnimator: ObjectAnimator? = null
     private var markerRotationAnimator: ObjectAnimator? = null
     private var vehicleMarker: Marker? = null
+
+    private var zoomFactor: Float = 15f
 
     constructor(context: Context) : super(context) {
         setUp(context)
@@ -65,6 +73,7 @@ class MapLayout : MapView, RelativeLayout {
     override fun obtainGoogleMap() {
         mapView.getMapAsync {
             googleMap = it
+            setUpMap()
             mapPresenter.mapLoaded()
         }
     }
@@ -78,6 +87,7 @@ class MapLayout : MapView, RelativeLayout {
             if (marker.position != null) {
                 animateMarkerPosition(marker, finalLatLng)
                 animateMarkerRotation(marker, finalLatLng)
+                googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(finalLatLng, zoomFactor))
             } else {
                 marker.position = finalLatLng
             }
@@ -127,10 +137,18 @@ class MapLayout : MapView, RelativeLayout {
         mapPresenter.viewDetached()
     }
 
+    override fun setUpMap() {
+        googleMap?.setOnCameraIdleListener {
+            zoomFactor = googleMap?.cameraPosition?.zoom ?: 0f
+            println("Zoom: $zoomFactor")
+        }
+    }
+
     override fun updateVehicleLocation(location: LatLng) {
         if (vehicleMarker == null) {
             val vehicleIcon = BitmapDescriptorFactory.fromResource(R.drawable.marker_vehicle)
-            vehicleMarker = googleMap?.addMarker(MarkerOptions().icon(vehicleIcon).position(location))
+            vehicleMarker =
+                googleMap?.addMarker(MarkerOptions().icon(vehicleIcon).position(location))
         }
         animateMarker(vehicleMarker, location)
     }
