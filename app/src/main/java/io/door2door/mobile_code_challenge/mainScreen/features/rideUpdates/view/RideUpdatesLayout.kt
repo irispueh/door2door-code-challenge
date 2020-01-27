@@ -11,13 +11,17 @@ import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.dagger
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.dagger.RideUpdatesModule
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.presenter.RideUpdatesPresenter
 import io.door2door.mobile_code_challenge.mainScreen.view.MainScreenActivity
-import kotlinx.android.synthetic.main.feature_ride_updates.view.*
+import java.util.*
 import javax.inject.Inject
 
 class RideUpdatesLayout : RelativeLayout, RideUpdatesView {
 
     @Inject
     lateinit var rideUpdatesPresenter: RideUpdatesPresenter
+
+    private var statusTextView: TextView? = null
+    private var pickUpAddressTextView: TextView? = null
+    private var dropOffAddressTextView: TextView? = null
 
     constructor(context: Context) : super(context) {
         setUp(context)
@@ -50,6 +54,11 @@ class RideUpdatesLayout : RelativeLayout, RideUpdatesView {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+
+        statusTextView = findViewById(R.id.statusTextView)
+        pickUpAddressTextView = findViewById(R.id.pickUpAddressTextView)
+        dropOffAddressTextView = findViewById(R.id.dropOffAddressTextView)
+
         rideUpdatesPresenter.viewAttached()
     }
 
@@ -59,18 +68,24 @@ class RideUpdatesLayout : RelativeLayout, RideUpdatesView {
     }
 
     override fun updateRideStatus(status: String) {
-        val statusTextView = findViewById<TextView>(R.id.statusTextView)
-        statusTextView.visibility = View.VISIBLE
         val statusText = resources.getString(R.string.status, status)
-        statusTextView.text = statusText
+        statusTextView?.text = statusText
+        statusTextView?.visibility = View.VISIBLE
     }
 
     override fun showRideAddresses(pickUpAddress: String, dropOffAddress: String) {
-        val pickUpTextView = findViewById<TextView>(R.id.pickUpAddressTextView)
-        val dropOffTextView = findViewById<TextView>(R.id.dropOffAddressTextView)
         val pickUpText = resources.getString(R.string.pickup_at, pickUpAddress)
+        pickUpAddressTextView?.text = pickUpText
+        pickUpAddressTextView?.visibility = View.VISIBLE
+
         val dropOffText = resources.getString(R.string.dropoff_at, dropOffAddress)
-        pickUpTextView.text = pickUpText
-        dropOffTextView.text = dropOffText
+        dropOffAddressTextView?.text = dropOffText
+        dropOffAddressTextView?.visibility = View.VISIBLE
+    }
+
+    override fun hideRideInformation() {
+        statusTextView?.visibility = View.INVISIBLE
+        pickUpAddressTextView?.visibility = View.INVISIBLE
+        dropOffAddressTextView?.visibility = View.INVISIBLE
     }
 }

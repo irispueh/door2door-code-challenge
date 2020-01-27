@@ -38,6 +38,7 @@ class MapLayout : MapView, RelativeLayout {
     private var markerPositionAnimator: ObjectAnimator? = null
     private var markerRotationAnimator: ObjectAnimator? = null
     private var vehicleMarker: Marker? = null
+    private var intermediateStopsMarker: List<Marker?> = emptyList()
 
     private var zoomFactor: Float = 15f
 
@@ -87,7 +88,7 @@ class MapLayout : MapView, RelativeLayout {
             if (marker.position != null) {
                 animateMarkerPosition(marker, finalLatLng)
                 animateMarkerRotation(marker, finalLatLng)
-                googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(finalLatLng, zoomFactor))
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(finalLatLng, zoomFactor))
             } else {
                 marker.position = finalLatLng
             }
@@ -132,15 +133,17 @@ class MapLayout : MapView, RelativeLayout {
         return location
     }
 
+    private fun io.door2door.mobile_code_challenge.data.events.Location.convertToLatLng(): LatLng
+            = LatLng(this.lat, this.lng)
+
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         mapPresenter.viewDetached()
     }
 
-    override fun setUpMap() {
+    private fun setUpMap() {
         googleMap?.setOnCameraIdleListener {
             zoomFactor = googleMap?.cameraPosition?.zoom ?: 0f
-            println("Zoom: $zoomFactor")
         }
     }
 
@@ -151,5 +154,15 @@ class MapLayout : MapView, RelativeLayout {
                 googleMap?.addMarker(MarkerOptions().icon(vehicleIcon).position(location))
         }
         animateMarker(vehicleMarker, location)
+    }
+
+    override fun updateIntermediateStops(intermediateStops: List<io.door2door.mobile_code_challenge.data.events.Location>) {
+        intermediateStopsMarker.forEach {
+            it?.remove()
+        }
+
+        intermediateStopsMarker = intermediateStops.map {
+            googleMap?.addMarker(MarkerOptions().position(it.convertToLatLng()))
+        }
     }
 }

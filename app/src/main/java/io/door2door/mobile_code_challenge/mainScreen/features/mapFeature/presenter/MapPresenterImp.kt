@@ -1,6 +1,7 @@
 package io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.presenter
 
 import android.util.Log
+import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.IntermediateStopLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.StatusLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.VehicleLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.model.BOOKING_CLOSED
@@ -17,7 +18,8 @@ class MapPresenterImp @Inject constructor(
     private val mapView: MapView,
     private val mainScreenInteractor: MainScreenInteractor,
     private val vehicleLocationMapper: VehicleLocationMapper,
-    private val statusLocationMapper: StatusLocationMapper
+    private val statusLocationMapper: StatusLocationMapper,
+    private val intermediateStopLocationMapper: IntermediateStopLocationMapper
 ) : MapPresenter {
 
     private val disposables = CompositeDisposable()
@@ -25,7 +27,6 @@ class MapPresenterImp @Inject constructor(
 
     override fun viewAttached() {
         mapView.obtainGoogleMap()
-        subscribeToVehicleLocationUpdates()
     }
 
     override fun viewDetached() {
@@ -34,7 +35,8 @@ class MapPresenterImp @Inject constructor(
 
     override fun mapLoaded() {
         //todo
-
+        subscribeToVehicleLocationUpdates()
+        subscribeToIntermediateStopsUpdates()
     }
 
     private fun subscribeToVehicleLocationUpdates() {
@@ -42,10 +44,22 @@ class MapPresenterImp @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                println("Vehicle at location ${it.latLng}")
                 mapView.updateVehicleLocation(it.latLng)
             }, {
                 Log.d(tag, "Error on getting vehicle location updates")
+            })
+        )
+    }
+
+    private fun subscribeToIntermediateStopsUpdates() {
+        disposables.add(mainScreenInteractor.getIntermediateStopUpdates(intermediateStopLocationMapper)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                println("Intermediate stop at location ${it.intermediateStops}")
+                mapView.updateIntermediateStops(it.intermediateStops)
+            }, {
+                Log.d(tag, "Error on getting intermediate stop updates")
             })
         )
     }

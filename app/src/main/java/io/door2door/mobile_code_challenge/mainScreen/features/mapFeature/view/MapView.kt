@@ -1,6 +1,7 @@
 package io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.view
 
 import com.google.android.gms.maps.model.LatLng
+import io.door2door.mobile_code_challenge.data.events.Location
 
 interface MapView {
 
@@ -9,4 +10,6 @@ interface MapView {
   fun clearMap()
 
   fun updateVehicleLocation(location: LatLng)
+
+  fun updateIntermediateStops(intermediateStops: List<Location>)
 }
