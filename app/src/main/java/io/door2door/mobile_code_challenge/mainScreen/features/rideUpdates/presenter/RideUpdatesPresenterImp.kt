@@ -8,7 +8,9 @@ import io.door2door.mobile_code_challenge.mainScreen.interactor.MainScreenIntera
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.util.*
 import javax.inject.Inject
+import kotlin.concurrent.schedule
 
 class RideUpdatesPresenterImp @Inject constructor(
     private val rideUpdatesView: RideUpdatesView,
@@ -18,6 +20,10 @@ class RideUpdatesPresenterImp @Inject constructor(
 
     private val disposables = CompositeDisposable()
     private val tag = RideUpdatesPresenterImp::class.simpleName
+
+    companion object {
+        const val DELAY: Long = 10000
+    }
 
     override fun viewAttached() {
         subscribeToBookingStatusUpdates()
@@ -42,9 +48,16 @@ class RideUpdatesPresenterImp @Inject constructor(
     }
 
     private fun handleStatusUpdate(bookingStatus: BookingStatusModel) {
-        if (bookingStatus.dropoffAddress != null && bookingStatus.pickupAddress != null) {
-            rideUpdatesView.showRideAddresses(bookingStatus.pickupAddress, bookingStatus.dropoffAddress)
-        }
         rideUpdatesView.updateRideStatus(bookingStatus.status)
+        if (bookingStatus.dropoffAddress != null && bookingStatus.pickupAddress != null) {
+            rideUpdatesView.showRideAddresses(
+                bookingStatus.pickupAddress,
+                bookingStatus.dropoffAddress
+            )
+        } else if (bookingStatus.isBookingClosed) {
+            Timer().schedule(DELAY){
+                rideUpdatesView.hideRideInformation()
+            }
+        }
     }
 }
