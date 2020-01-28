@@ -27,6 +27,10 @@ android {
     kapt {
         mapDiagnosticLocations = true
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {

@@ -1,6 +1,8 @@
 package io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.presenter
 
 import android.util.Log
+import io.door2door.mobile_code_challenge.mainScreen.features.VISIBILITY_DELAY
+import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.VehicleLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.mapper.BookingStatusMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.model.BookingStatusModel
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.view.RideUpdatesView
@@ -8,32 +10,66 @@ import io.door2door.mobile_code_challenge.mainScreen.interactor.MainScreenIntera
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.util.*
 import javax.inject.Inject
+import kotlin.concurrent.schedule
 
 class RideUpdatesPresenterImp @Inject constructor(
     private val rideUpdatesView: RideUpdatesView,
     private val mainScreenInteractor: MainScreenInteractor,
-    private val bookingStatusMapper: BookingStatusMapper) : RideUpdatesPresenter {
+    private val bookingStatusMapper: BookingStatusMapper,
+    private val vehicleLocationMapper: VehicleLocationMapper
+) : RideUpdatesPresenter {
 
-  private val disposables = CompositeDisposable()
-  private val tag = RideUpdatesPresenterImp::class.simpleName
+    private val disposables = CompositeDisposable()
+    private val tag = RideUpdatesPresenterImp::class.simpleName
 
-  override fun viewAttached() {
-    subscribeToBookingStatusUpdates()
-  }
+    override fun viewAttached() {
+        subscribeToBookingStatusUpdates()
+        subscribeToVehicleLocationUpdates()
+    }
 
-  override fun viewDetached() {
-    disposables.dispose()
-  }
+    override fun viewDetached() {
+        disposables.dispose()
+    }
 
-  private fun subscribeToBookingStatusUpdates() {
-    disposables.add(mainScreenInteractor.getBookingStatusUpdates(bookingStatusMapper)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe({
-          //todo
-        }, {
-          Log.d(tag, "Error on getting status updates")
-        }))
-  }
+    private fun subscribeToBookingStatusUpdates() {
+        disposables.add(
+            mainScreenInteractor.getBookingStatusUpdates(bookingStatusMapper)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    handleStatusUpdate(it)
+                }, {
+                    Log.d(tag, "Error on getting status updates")
+                })
+        )
+    }
+
+    private fun subscribeToVehicleLocationUpdates() {
+        disposables.add(
+            mainScreenInteractor.getVehicleLocationUpdates(vehicleLocationMapper)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    rideUpdatesView.updateBearingNavigation(it.latLng)
+                }, {
+                    Log.d(tag, "Error on getting vehicle location updates")
+                })
+        )
+    }
+
+    private fun handleStatusUpdate(bookingStatus: BookingStatusModel) {
+        rideUpdatesView.updateRideStatus(bookingStatus.status)
+        if (bookingStatus.dropoffAddress != null && bookingStatus.pickupAddress != null) {
+            rideUpdatesView.showRideAddresses(
+                bookingStatus.pickupAddress,
+                bookingStatus.dropoffAddress
+            )
+        } else if (bookingStatus.isBookingClosed) {
+            Timer().schedule(VISIBILITY_DELAY){
+                rideUpdatesView.hideRideInformation()
+            }
+        }
+    }
 }
