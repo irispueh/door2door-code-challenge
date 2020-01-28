@@ -4,6 +4,7 @@ import android.content.res.Resources
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
+import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.VehicleLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.mapper.BookingStatusMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.view.RideUpdatesView
 import io.door2door.mobile_code_challenge.mainScreen.interactor.MainScreenInteractor
@@ -27,6 +28,7 @@ class RideUpdatesPresenterTest {
             rideUpdatesView,
             mainScreenInteractor,
             BookingStatusMapper(resources),
+            VehicleLocationMapper()
         )
     }
 
@@ -34,8 +36,11 @@ class RideUpdatesPresenterTest {
     fun shouldSubscribeToUpdates() {
         Mockito.`when`(mainScreenInteractor.getBookingStatusUpdates(any<BookingStatusMapper>()))
             .thenReturn(Observable.empty())
+        Mockito.`when`(mainScreenInteractor.getVehicleLocationUpdates(any<VehicleLocationMapper>()))
+            .thenReturn(Observable.empty())
 
         presenter.viewAttached()
         verify(mainScreenInteractor).getBookingStatusUpdates(any<BookingStatusMapper>())
+        verify(mainScreenInteractor).getVehicleLocationUpdates(any<VehicleLocationMapper>())
     }
 }

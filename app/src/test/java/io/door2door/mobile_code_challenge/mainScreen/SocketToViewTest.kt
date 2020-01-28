@@ -51,6 +51,7 @@ class SocketToViewTest {
             rideUpdatesView,
             mainScreenInteractor,
             BookingStatusMapper(resources),
+            VehicleLocationMapper()
         )
 
         TestUtils.setupRxJavaScheduler()
@@ -82,6 +83,11 @@ class SocketToViewTest {
     @Test
     fun shouldUpdateBookingStatus() {
         verify(rideUpdatesView, Times(3)).updateRideStatus(any())
+    }
+
+    @Test
+    fun shouldUpdateNavigationBearing() {
+        verify(rideUpdatesView, Times(3)).updateBearingNavigation(any())
     }
 
     private fun setUpVehicleLocationUpdates() {
