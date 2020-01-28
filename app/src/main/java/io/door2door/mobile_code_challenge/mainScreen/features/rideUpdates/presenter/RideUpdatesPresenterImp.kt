@@ -39,7 +39,6 @@ class RideUpdatesPresenterImp @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    //todo
                     handleStatusUpdate(it)
                 }, {
                     Log.d(tag, "Error on getting status updates")

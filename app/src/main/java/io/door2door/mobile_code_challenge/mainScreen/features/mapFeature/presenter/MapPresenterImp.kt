@@ -37,7 +37,6 @@ class MapPresenterImp @Inject constructor(
     }
 
     override fun mapLoaded() {
-        //todo
         subscribeToVehicleLocationUpdates()
         subscribeToIntermediateStopsUpdates()
         subscribeToBookingStatusUpdates()
@@ -76,7 +75,9 @@ class MapPresenterImp @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     if (it.status == BOOKING_OPENED) {
-                        mapView.showPickUpAndDropOffOnMap(it.pickUpLocation!!, it.dropOffLocation!!)
+                        if (it.pickUpLocation != null && it.dropOffLocation != null) {
+                            mapView.showPickUpAndDropOffOnMap(it.pickUpLocation, it.dropOffLocation)
+                        }
                     } else if (it.status == BOOKING_CLOSED) {
                         Timer().schedule(VISIBILITY_DELAY){
                             mapView.clearMap()
