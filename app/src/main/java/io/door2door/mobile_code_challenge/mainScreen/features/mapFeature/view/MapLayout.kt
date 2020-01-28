@@ -165,10 +165,7 @@ class MapLayout : MapView, RelativeLayout {
         }
     }
 
-    override fun showPickUpAndDropOffOnMap(
-        pickUpAddress: LocationModel,
-        dropOffAddress: LocationModel
-    ) {
+    override fun showPickUpAndDropOffOnMap(pickUpAddress: LocationModel, dropOffAddress: LocationModel) {
         if (pickUpMarker == null) {
             val pickUpIcon = BitmapDescriptorFactory.fromResource(R.drawable.marker_pickup)
             pickUpMarker = createMarker(pickUpAddress.address, pickUpIcon, pickUpAddress.convertToLatLng())
@@ -179,6 +176,7 @@ class MapLayout : MapView, RelativeLayout {
             dropOffMarker = createMarker(dropOffAddress.address, dropOffIcon, dropOffAddress.convertToLatLng())
         }
     }
+
 
     private fun createMarker(title: String? = null, icon: BitmapDescriptor, position: LatLng): Marker? {
         return googleMap?.addMarker(MarkerOptions().icon(icon).position(position).title(title))
