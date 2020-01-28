@@ -13,38 +13,41 @@ import javax.inject.Inject
 
 class BookingsWebSocketImp @Inject constructor(
     private val okHttpClient: OkHttpClient,
-    moshi: Moshi) : BookingsWebSocket {
+    moshi: Moshi
+) : BookingsWebSocket {
 
-  private val statusUpdateSubject: Subject<Event> = BehaviorSubject.create()
-  private val vehicleLocationUpdateSubject: Subject<Event> = BehaviorSubject.create()
-  private val intermediateStopUpdateSubject: Subject<Event> = BehaviorSubject.create()
-  private val webSocketUrl = "wss://d2d-frontend-code-challenge.herokuapp.com"
+    private val statusUpdateSubject: Subject<Event> = BehaviorSubject.create()
+    private val vehicleLocationUpdateSubject: Subject<Event> = BehaviorSubject.create()
+    private val intermediateStopUpdateSubject: Subject<Event> = BehaviorSubject.create()
+    private val webSocketUrl = "wss://d2d-frontend-code-challenge.herokuapp.com"
 
-  private val bookingWebSocketListener = BookingWebSocketListener(moshi)
+    private val bookingWebSocketListener = BookingWebSocketListener(moshi)
 
-  override fun connectToWebSocket() {
-    val request = Request.Builder().url(webSocketUrl).build()
-    okHttpClient.newWebSocket(request, bookingWebSocketListener)
-  }
-
-  override fun getIntermediateStopUpdates(): Observable<Event> = intermediateStopUpdateSubject.hide()
-
-  override fun getStatusUpdates(): Observable<Event> = statusUpdateSubject.hide()
-
-  override fun getVehicleLocationUpdates(): Observable<Event> = vehicleLocationUpdateSubject.hide()
-
-  inner class BookingWebSocketListener(private val moshi: Moshi) : WebSocketListener() {
-
-    override fun onMessage(webSocket: WebSocket, text: String) {
-      super.onMessage(webSocket, text)
-      moshi.adapter(Event::class.java).fromJson(text)?.let {
-        println("Event: $it")
-        when (it) {
-          is BookingOpened, is BookingClosed, is StatusUpdated -> statusUpdateSubject.onNext(it)
-          is VehicleLocationUpdated -> vehicleLocationUpdateSubject.onNext(it)
-          is IntermediateStopLocationsChanged -> intermediateStopUpdateSubject.onNext(it)
-        }
-      }
+    override fun connectToWebSocket() {
+        val request = Request.Builder().url(webSocketUrl).build()
+        okHttpClient.newWebSocket(request, bookingWebSocketListener)
     }
-  }
+
+    override fun getIntermediateStopUpdates(): Observable<Event> =
+        intermediateStopUpdateSubject.hide()
+
+    override fun getStatusUpdates(): Observable<Event> = statusUpdateSubject.hide()
+
+    override fun getVehicleLocationUpdates(): Observable<Event> =
+        vehicleLocationUpdateSubject.hide()
+
+    inner class BookingWebSocketListener(private val moshi: Moshi) : WebSocketListener() {
+
+        override fun onMessage(webSocket: WebSocket, text: String) {
+            super.onMessage(webSocket, text)
+            moshi.adapter(Event::class.java).fromJson(text)?.let {
+                println("Event: $it")
+                when (it) {
+                    is BookingOpened, is BookingClosed, is StatusUpdated -> statusUpdateSubject.onNext(it)
+                    is VehicleLocationUpdated -> vehicleLocationUpdateSubject.onNext(it)
+                    is IntermediateStopLocationsChanged -> intermediateStopUpdateSubject.onNext(it)
+                }
+            }
+        }
+    }
 }

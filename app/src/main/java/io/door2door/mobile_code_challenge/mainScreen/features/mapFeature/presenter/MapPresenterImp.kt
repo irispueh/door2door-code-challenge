@@ -4,11 +4,9 @@ import android.util.Log
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.IntermediateStopLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.StatusLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.VehicleLocationMapper
-import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.model.BOOKING_CLOSED
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.model.BOOKING_OPENED
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.view.MapView
 import io.door2door.mobile_code_challenge.mainScreen.interactor.MainScreenInteractor
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers

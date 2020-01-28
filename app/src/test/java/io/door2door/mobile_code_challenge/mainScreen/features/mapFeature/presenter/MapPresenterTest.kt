@@ -24,7 +24,7 @@ import java.util.concurrent.Callable
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
-class MapPresenterImpTest {
+class MapPresenterTest {
 
     private val mapView = mock<MapView>()
     private val mainScreenInteractor = mock<MainScreenInteractor>()

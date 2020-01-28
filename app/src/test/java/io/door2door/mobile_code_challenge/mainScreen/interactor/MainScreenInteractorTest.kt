@@ -15,7 +15,7 @@ import org.junit.Test
 import org.junit.Assert.*
 import org.mockito.Mockito
 
-class MainScreenInteractorImpTest {
+class MainScreenInteractorTest {
 
     private val bookingsWebSocket = mock<BookingsWebSocket>()
 

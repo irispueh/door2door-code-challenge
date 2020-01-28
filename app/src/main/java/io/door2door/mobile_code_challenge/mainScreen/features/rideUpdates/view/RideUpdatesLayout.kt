@@ -11,7 +11,6 @@ import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.dagger
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.dagger.RideUpdatesModule
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.presenter.RideUpdatesPresenter
 import io.door2door.mobile_code_challenge.mainScreen.view.MainScreenActivity
-import java.util.*
 import javax.inject.Inject
 
 class RideUpdatesLayout : RelativeLayout, RideUpdatesView {
