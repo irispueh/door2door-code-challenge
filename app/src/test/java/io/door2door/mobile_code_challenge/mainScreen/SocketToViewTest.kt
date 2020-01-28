@@ -6,7 +6,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
-import io.door2door.mobile_code_challenge.data.events.*
+import io.door2door.mobile_code_challenge.data.*
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.IntermediateStopLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.StatusLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.VehicleLocationMapper
@@ -67,7 +67,7 @@ class SocketToViewTest {
 
     @Test
     fun shouldUpdateVehicleLocationInMapOnVehicleLocationUpdate() {
-        verify(mapView, Times(3)).updateVehicleLocation(any<LatLng>())
+        verify(mapView, Times(3)).updateVehicleLocation(any())
     }
 
     @Test
@@ -77,7 +77,7 @@ class SocketToViewTest {
 
     @Test
     fun shouldUpdateIntermediateStopsInMapOnIntermediateStopUpdate() {
-        verify(mapView, Times(2)).updateIntermediateStops(any())
+        verify(mapView, Times(3)).updateIntermediateStops(any())
     }
 
     @Test

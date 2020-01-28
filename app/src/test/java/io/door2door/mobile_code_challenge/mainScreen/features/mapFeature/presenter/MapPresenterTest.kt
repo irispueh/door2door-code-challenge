@@ -4,7 +4,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
-import io.door2door.mobile_code_challenge.data.events.Location
+import io.door2door.mobile_code_challenge.data.Location
 import io.door2door.mobile_code_challenge.mainScreen.TestUtils
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.IntermediateStopLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.StatusLocationMapper
@@ -75,7 +75,8 @@ class MapPresenterTest {
             .thenReturn(
                 Observable.just(StatusLocationModel(BOOKING_OPENED, LatLng(0.0,0.0),
                     Location(address = null, lat = 52.519061, lng = 13.426789),
-                    Location(address = null, lat = 52.519061, lng = 15.426789))))
+                    Location(address = null, lat = 52.519061, lng = 15.426789)
+                )))
         Mockito.`when`(mainScreenInteractor.getIntermediateStopUpdates(any<IntermediateStopLocationMapper>()))
             .thenReturn(Observable.just(IntermediateStopLocationModel(emptyList())))
 

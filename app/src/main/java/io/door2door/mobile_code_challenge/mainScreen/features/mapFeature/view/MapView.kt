@@ -1,7 +1,7 @@
 package io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.view
 
 import com.google.android.gms.maps.model.LatLng
-import io.door2door.mobile_code_challenge.data.events.Location
+import io.door2door.mobile_code_challenge.data.Location
 
 interface MapView {
 

@@ -1,8 +1,8 @@
 package io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper
 
-import io.door2door.mobile_code_challenge.data.events.BaseBookingMapper
-import io.door2door.mobile_code_challenge.data.events.Event
-import io.door2door.mobile_code_challenge.data.events.IntermediateStopLocationsChanged
+import io.door2door.mobile_code_challenge.data.BaseBookingMapper
+import io.door2door.mobile_code_challenge.data.Event
+import io.door2door.mobile_code_challenge.data.IntermediateStopLocationsChanged
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.model.IntermediateStopLocationModel
 import javax.inject.Inject
 

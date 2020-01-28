@@ -22,7 +22,7 @@ import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.present
 import io.door2door.mobile_code_challenge.mainScreen.view.MainScreenActivity
 import kotlinx.android.synthetic.main.feature_map.view.*
 import javax.inject.Inject
-import io.door2door.mobile_code_challenge.data.events.Location as LocationModel
+import io.door2door.mobile_code_challenge.data.Location as LocationModel
 
 
 private const val MARKER_ANIMATION_DURATION = 1000L

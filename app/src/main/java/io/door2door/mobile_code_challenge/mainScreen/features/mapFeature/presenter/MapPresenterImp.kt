@@ -76,6 +76,7 @@ class MapPresenterImp @Inject constructor(
                     if (it.status == BOOKING_OPENED) {
                         if (it.pickUpLocation != null && it.dropOffLocation != null) {
                             mapView.showPickUpAndDropOffOnMap(it.pickUpLocation, it.dropOffLocation)
+                            it.intermediateStops?.let { stops -> mapView.updateIntermediateStops(stops) }
                         }
                     } else if (it.status == BOOKING_CLOSED) {
                         Timer().schedule(VISIBILITY_DELAY){

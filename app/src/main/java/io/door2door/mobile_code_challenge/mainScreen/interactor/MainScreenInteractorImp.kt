@@ -1,6 +1,6 @@
 package io.door2door.mobile_code_challenge.mainScreen.interactor
 
-import io.door2door.mobile_code_challenge.data.events.BaseBookingMapper
+import io.door2door.mobile_code_challenge.data.BaseBookingMapper
 import io.door2door.mobile_code_challenge.network.BookingsWebSocket
 import io.reactivex.Observable
 import javax.inject.Inject

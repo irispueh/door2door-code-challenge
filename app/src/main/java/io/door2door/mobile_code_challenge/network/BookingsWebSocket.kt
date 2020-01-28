@@ -1,6 +1,6 @@
 package io.door2door.mobile_code_challenge.network
 
-import io.door2door.mobile_code_challenge.data.events.Event
+import io.door2door.mobile_code_challenge.data.Event
 import io.reactivex.Observable
 
 interface BookingsWebSocket {

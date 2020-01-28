@@ -1,4 +1,4 @@
-package io.door2door.mobile_code_challenge.data.events
+package io.door2door.mobile_code_challenge.data
 
 import io.door2door.mobile_code_challenge.base.BaseMapper
 

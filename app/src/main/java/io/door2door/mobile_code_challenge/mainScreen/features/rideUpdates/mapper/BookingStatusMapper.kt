@@ -2,7 +2,7 @@ package io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.mappe
 
 import android.content.res.Resources
 import io.door2door.mobile_code_challenge.R
-import io.door2door.mobile_code_challenge.data.events.*
+import io.door2door.mobile_code_challenge.data.*
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.model.BookingStatusModel
 import javax.inject.Inject
 

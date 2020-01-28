@@ -1,7 +1,7 @@
 package io.door2door.mobile_code_challenge.network
 
 import com.squareup.moshi.Moshi
-import io.door2door.mobile_code_challenge.data.events.*
+import io.door2door.mobile_code_challenge.data.*
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.Subject

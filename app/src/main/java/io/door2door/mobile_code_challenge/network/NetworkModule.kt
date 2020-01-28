@@ -6,7 +6,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import io.door2door.mobile_code_challenge.base.dagger.ApplicationScope
-import io.door2door.mobile_code_challenge.data.events.*
+import io.door2door.mobile_code_challenge.data.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
