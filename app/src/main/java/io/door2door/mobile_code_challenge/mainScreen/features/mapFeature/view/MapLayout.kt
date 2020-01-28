@@ -3,7 +3,8 @@ package io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.view
 import android.animation.ObjectAnimator
 import android.animation.TypeEvaluator
 import android.content.Context
-import android.location.Location
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.util.Property
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import io.door2door.mobile_code_challenge.R
+import io.door2door.mobile_code_challenge.convertToLatLng
 import io.door2door.mobile_code_challenge.convertToLocation
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.dagger.DaggerMapComponent
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.dagger.MapModule
@@ -80,7 +82,11 @@ class MapLayout : MapView, RelativeLayout {
     }
 
     override fun clearMap() {
-        googleMap?.clear()
+        val handler = Handler(Looper.getMainLooper())
+        handler.post {
+            googleMap?.clear()
+            clearMarkers()
+        }
     }
 
     private fun animateMarker(marker: Marker?, finalLatLng: LatLng) {
@@ -126,8 +132,6 @@ class MapLayout : MapView, RelativeLayout {
         }
     }
 
-    private fun LocationModel.convertToLatLng(): LatLng = LatLng(this.lat, this.lng)
-
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         mapPresenter.viewDetached()
@@ -171,8 +175,14 @@ class MapLayout : MapView, RelativeLayout {
         }
     }
 
-
     private fun createMarker(title: String? = null, icon: BitmapDescriptor, position: LatLng): Marker? {
         return googleMap?.addMarker(MarkerOptions().icon(icon).position(position).title(title))
+    }
+
+    private fun clearMarkers() {
+        vehicleMarker = null
+        pickUpMarker = null
+        dropOffMarker = null
+        intermediateStopsMarker = emptyList()
     }
 }

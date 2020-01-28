@@ -1,16 +1,21 @@
 package io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.presenter
 
 import android.util.Log
+import io.door2door.mobile_code_challenge.mainScreen.features.VISIBILITY_DELAY
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.IntermediateStopLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.StatusLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.VehicleLocationMapper
+import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.model.BOOKING_CLOSED
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.model.BOOKING_OPENED
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.view.MapView
 import io.door2door.mobile_code_challenge.mainScreen.interactor.MainScreenInteractor
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.util.*
+import java.util.logging.Handler
 import javax.inject.Inject
+import kotlin.concurrent.schedule
 
 class MapPresenterImp @Inject constructor(
     private val mapView: MapView,
@@ -72,6 +77,10 @@ class MapPresenterImp @Inject constructor(
                 .subscribe({
                     if (it.status == BOOKING_OPENED) {
                         mapView.showPickUpAndDropOffOnMap(it.pickUpLocation!!, it.dropOffLocation!!)
+                    } else if (it.status == BOOKING_CLOSED) {
+                        Timer().schedule(VISIBILITY_DELAY){
+                            mapView.clearMap()
+                        }
                     }
                 }, {
                     Log.d(tag, "Error on getting booking status updates")

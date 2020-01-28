@@ -2,6 +2,8 @@ package io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.view
 
 import android.content.Context
 import android.location.Location
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -91,19 +93,27 @@ class RideUpdatesLayout : RelativeLayout, RideUpdatesView {
     }
 
     override fun hideRideInformation() {
-        statusTextView?.visibility = View.INVISIBLE
-        pickUpAddressTextView?.visibility = View.INVISIBLE
-        dropOffAddressTextView?.visibility = View.INVISIBLE
+        val handler = Handler(Looper.getMainLooper())
+        handler.post {
+            statusTextView?.visibility = View.INVISIBLE
+            pickUpAddressTextView?.visibility = View.INVISIBLE
+            dropOffAddressTextView?.visibility = View.INVISIBLE
+            rotateNavigationBearing(0f)
+        }
     }
 
     override fun updateBearingNavigation(vehicleLocation: LatLng) {
         val newLocation = vehicleLocation.convertToLocation()
         if (previousVehicleLocation != null) {
             val bearing = previousVehicleLocation?.bearingTo(newLocation) ?: 0f
-            bearingImageView?.apply {
-                animate().rotation(bearing).start()
-            }
+            rotateNavigationBearing(bearing)
         }
         previousVehicleLocation = newLocation
+    }
+
+    private fun rotateNavigationBearing(bearing: Float) {
+        bearingImageView?.apply {
+            animate().rotation(bearing).start()
+        }
     }
 }

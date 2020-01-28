@@ -1,6 +1,7 @@
 package io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.presenter
 
 import android.util.Log
+import io.door2door.mobile_code_challenge.mainScreen.features.VISIBILITY_DELAY
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.VehicleLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.mapper.BookingStatusMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.model.BookingStatusModel
@@ -22,10 +23,6 @@ class RideUpdatesPresenterImp @Inject constructor(
 
     private val disposables = CompositeDisposable()
     private val tag = RideUpdatesPresenterImp::class.simpleName
-
-    companion object {
-        const val DELAY: Long = 10000
-    }
 
     override fun viewAttached() {
         subscribeToBookingStatusUpdates()
@@ -71,7 +68,7 @@ class RideUpdatesPresenterImp @Inject constructor(
                 bookingStatus.dropoffAddress
             )
         } else if (bookingStatus.isBookingClosed) {
-            Timer().schedule(DELAY){
+            Timer().schedule(VISIBILITY_DELAY){
                 rideUpdatesView.hideRideInformation()
             }
         }
