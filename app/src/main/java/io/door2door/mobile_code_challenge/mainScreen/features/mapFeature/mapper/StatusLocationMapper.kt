@@ -11,8 +11,12 @@ import javax.inject.Inject
 class StatusLocationMapper @Inject constructor() : BaseBookingMapper<StatusLocationModel> {
   override fun mapDataModelToViewModel(dataModel: Event): StatusLocationModel {
     return when (dataModel) {
-      is BookingOpened -> StatusLocationModel(BOOKING_OPENED,
-          LatLng(dataModel.data.vehicleLocation.lat, dataModel.data.vehicleLocation.lng))
+      is BookingOpened -> StatusLocationModel(
+        BOOKING_OPENED,
+        LatLng(dataModel.data.vehicleLocation.lat, dataModel.data.vehicleLocation.lng),
+        dataModel.data.pickupLocation,
+        dataModel.data.dropoffLocation
+      )
       is BookingClosed -> StatusLocationModel(BOOKING_CLOSED)
       else -> StatusLocationModel(CLEAR)
     }

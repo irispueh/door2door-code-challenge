@@ -12,4 +12,6 @@ interface MapView {
   fun updateVehicleLocation(location: LatLng)
 
   fun updateIntermediateStops(intermediateStops: List<Location>)
+
+  fun showPickUpAndDropOffOnMap(pickUpAddress: Location, dropOffAddress: Location)
 }

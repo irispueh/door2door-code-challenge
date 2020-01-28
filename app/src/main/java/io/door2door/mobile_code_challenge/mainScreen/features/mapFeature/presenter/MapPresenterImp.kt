@@ -37,30 +37,47 @@ class MapPresenterImp @Inject constructor(
         //todo
         subscribeToVehicleLocationUpdates()
         subscribeToIntermediateStopsUpdates()
+        subscribeToBookingStatusUpdates()
     }
 
     private fun subscribeToVehicleLocationUpdates() {
-        disposables.add(mainScreenInteractor.getVehicleLocationUpdates(vehicleLocationMapper)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                mapView.updateVehicleLocation(it.latLng)
-            }, {
-                Log.d(tag, "Error on getting vehicle location updates")
-            })
+        disposables.add(
+            mainScreenInteractor.getVehicleLocationUpdates(vehicleLocationMapper)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    mapView.updateVehicleLocation(it.latLng)
+                }, {
+                    Log.d(tag, "Error on getting vehicle location updates")
+                })
         )
     }
 
     private fun subscribeToIntermediateStopsUpdates() {
-        disposables.add(mainScreenInteractor.getIntermediateStopUpdates(intermediateStopLocationMapper)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                println("Intermediate stop at location ${it.intermediateStops}")
-                mapView.updateIntermediateStops(it.intermediateStops)
-            }, {
-                Log.d(tag, "Error on getting intermediate stop updates")
-            })
+        disposables.add(
+            mainScreenInteractor.getIntermediateStopUpdates(intermediateStopLocationMapper)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    mapView.updateIntermediateStops(it.intermediateStops)
+                }, {
+                    Log.d(tag, "Error on getting intermediate stop updates")
+                })
+        )
+    }
+
+    private fun subscribeToBookingStatusUpdates() {
+        disposables.add(
+            mainScreenInteractor.getBookingStatusUpdates(statusLocationMapper)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    if (it.status == BOOKING_OPENED) {
+                        mapView.showPickUpAndDropOffOnMap(it.pickUpLocation!!, it.dropOffLocation!!)
+                    }
+                }, {
+                    Log.d(tag, "Error on getting booking status updates")
+                })
         )
     }
 }

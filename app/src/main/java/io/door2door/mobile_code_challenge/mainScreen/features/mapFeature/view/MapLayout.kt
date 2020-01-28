@@ -11,11 +11,7 @@ import android.view.animation.LinearInterpolator
 import android.widget.RelativeLayout
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import io.door2door.mobile_code_challenge.R
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.dagger.DaggerMapComponent
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.dagger.MapModule
@@ -23,6 +19,7 @@ import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.present
 import io.door2door.mobile_code_challenge.mainScreen.view.MainScreenActivity
 import kotlinx.android.synthetic.main.feature_map.view.*
 import javax.inject.Inject
+import io.door2door.mobile_code_challenge.data.events.Location as LocationModel
 
 
 private const val MARKER_ANIMATION_DURATION = 1000L
@@ -39,8 +36,10 @@ class MapLayout : MapView, RelativeLayout {
     private var markerRotationAnimator: ObjectAnimator? = null
     private var vehicleMarker: Marker? = null
     private var intermediateStopsMarker: List<Marker?> = emptyList()
+    private var pickUpMarker: Marker? = null
+    private var dropOffMarker: Marker? = null
 
-    private var zoomFactor: Float = 15f
+    private var zoomLevel: Float = 15f
 
     constructor(context: Context) : super(context) {
         setUp(context)
@@ -88,7 +87,7 @@ class MapLayout : MapView, RelativeLayout {
             if (marker.position != null) {
                 animateMarkerPosition(marker, finalLatLng)
                 animateMarkerRotation(marker, finalLatLng)
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(finalLatLng, zoomFactor))
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(finalLatLng, zoomLevel))
             } else {
                 marker.position = finalLatLng
             }
@@ -133,8 +132,7 @@ class MapLayout : MapView, RelativeLayout {
         return location
     }
 
-    private fun io.door2door.mobile_code_challenge.data.events.Location.convertToLatLng(): LatLng
-            = LatLng(this.lat, this.lng)
+    private fun LocationModel.convertToLatLng(): LatLng = LatLng(this.lat, this.lng)
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
@@ -143,7 +141,7 @@ class MapLayout : MapView, RelativeLayout {
 
     private fun setUpMap() {
         googleMap?.setOnCameraIdleListener {
-            zoomFactor = googleMap?.cameraPosition?.zoom ?: 0f
+            zoomLevel = googleMap?.cameraPosition?.zoom ?: 0f
         }
     }
 
@@ -156,13 +154,33 @@ class MapLayout : MapView, RelativeLayout {
         animateMarker(vehicleMarker, location)
     }
 
-    override fun updateIntermediateStops(intermediateStops: List<io.door2door.mobile_code_challenge.data.events.Location>) {
+    override fun updateIntermediateStops(intermediateStops: List<LocationModel>) {
         intermediateStopsMarker.forEach {
             it?.remove()
         }
 
+        val intermediateStopIcon = BitmapDescriptorFactory.fromResource(R.drawable.marker_intermediatestop)
         intermediateStopsMarker = intermediateStops.map {
-            googleMap?.addMarker(MarkerOptions().position(it.convertToLatLng()))
+            createMarker(icon = intermediateStopIcon, position = it.convertToLatLng())
         }
+    }
+
+    override fun showPickUpAndDropOffOnMap(
+        pickUpAddress: LocationModel,
+        dropOffAddress: LocationModel
+    ) {
+        if (pickUpMarker == null) {
+            val pickUpIcon = BitmapDescriptorFactory.fromResource(R.drawable.marker_pickup)
+            pickUpMarker = createMarker(pickUpAddress.address, pickUpIcon, pickUpAddress.convertToLatLng())
+        }
+
+        if (dropOffMarker == null) {
+            val dropOffIcon = BitmapDescriptorFactory.fromResource(R.drawable.marker_dropoff)
+            dropOffMarker = createMarker(dropOffAddress.address, dropOffIcon, dropOffAddress.convertToLatLng())
+        }
+    }
+
+    private fun createMarker(title: String? = null, icon: BitmapDescriptor, position: LatLng): Marker? {
+        return googleMap?.addMarker(MarkerOptions().icon(icon).position(position).title(title))
     }
 }
