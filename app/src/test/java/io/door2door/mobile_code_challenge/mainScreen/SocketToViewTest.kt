@@ -47,7 +47,11 @@ class SocketToViewTest {
             IntermediateStopLocationMapper()
         )
 
-        rideUpdatePresenter = RideUpdatesPresenterImp(rideUpdatesView, mainScreenInteractor, BookingStatusMapper(resources))
+        rideUpdatePresenter = RideUpdatesPresenterImp(
+            rideUpdatesView,
+            mainScreenInteractor,
+            BookingStatusMapper(resources),
+        )
 
         TestUtils.setupRxJavaScheduler()
         whenever(resources.getString(any())).thenReturn("")

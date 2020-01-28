@@ -1,6 +1,7 @@
 package io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.presenter
 
 import android.util.Log
+import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.mapper.VehicleLocationMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.mapper.BookingStatusMapper
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.model.BookingStatusModel
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.view.RideUpdatesView
@@ -15,7 +16,8 @@ import kotlin.concurrent.schedule
 class RideUpdatesPresenterImp @Inject constructor(
     private val rideUpdatesView: RideUpdatesView,
     private val mainScreenInteractor: MainScreenInteractor,
-    private val bookingStatusMapper: BookingStatusMapper
+    private val bookingStatusMapper: BookingStatusMapper,
+    private val vehicleLocationMapper: VehicleLocationMapper
 ) : RideUpdatesPresenter {
 
     private val disposables = CompositeDisposable()
@@ -27,6 +29,7 @@ class RideUpdatesPresenterImp @Inject constructor(
 
     override fun viewAttached() {
         subscribeToBookingStatusUpdates()
+        subscribeToVehicleLocationUpdates()
     }
 
     override fun viewDetached() {
@@ -43,6 +46,19 @@ class RideUpdatesPresenterImp @Inject constructor(
                     handleStatusUpdate(it)
                 }, {
                     Log.d(tag, "Error on getting status updates")
+                })
+        )
+    }
+
+    private fun subscribeToVehicleLocationUpdates() {
+        disposables.add(
+            mainScreenInteractor.getVehicleLocationUpdates(vehicleLocationMapper)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    rideUpdatesView.updateBearingNavigation(it.latLng)
+                }, {
+                    Log.d(tag, "Error on getting vehicle location updates")
                 })
         )
     }

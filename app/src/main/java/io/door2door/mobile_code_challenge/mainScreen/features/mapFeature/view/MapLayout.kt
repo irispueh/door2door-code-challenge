@@ -13,6 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import io.door2door.mobile_code_challenge.R
+import io.door2door.mobile_code_challenge.convertToLocation
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.dagger.DaggerMapComponent
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.dagger.MapModule
 import io.door2door.mobile_code_challenge.mainScreen.features.mapFeature.presenter.MapPresenter
@@ -123,13 +124,6 @@ class MapLayout : MapView, RelativeLayout {
             markerRotationAnimator?.duration = MARKER_ANIMATION_DURATION
             markerRotationAnimator?.start()
         }
-    }
-
-    private fun LatLng?.convertToLocation(): Location? = this?.let {
-        val location = Location("")
-        location.latitude = latitude
-        location.longitude = longitude
-        return location
     }
 
     private fun LocationModel.convertToLatLng(): LatLng = LatLng(this.lat, this.lng)

@@ -1,12 +1,16 @@
 package io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.view
 
 import android.content.Context
+import android.location.Location
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import com.google.android.gms.maps.model.LatLng
 import io.door2door.mobile_code_challenge.R
+import io.door2door.mobile_code_challenge.convertToLocation
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.dagger.DaggerRideUpdatesComponent
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.dagger.RideUpdatesModule
 import io.door2door.mobile_code_challenge.mainScreen.features.rideUpdates.presenter.RideUpdatesPresenter
@@ -21,6 +25,9 @@ class RideUpdatesLayout : RelativeLayout, RideUpdatesView {
     private var statusTextView: TextView? = null
     private var pickUpAddressTextView: TextView? = null
     private var dropOffAddressTextView: TextView? = null
+    private var bearingImageView: ImageView? = null
+
+    private var previousVehicleLocation: Location? = null
 
     constructor(context: Context) : super(context) {
         setUp(context)
@@ -57,6 +64,7 @@ class RideUpdatesLayout : RelativeLayout, RideUpdatesView {
         statusTextView = findViewById(R.id.statusTextView)
         pickUpAddressTextView = findViewById(R.id.pickUpAddressTextView)
         dropOffAddressTextView = findViewById(R.id.dropOffAddressTextView)
+        bearingImageView = findViewById(R.id.bearingImageView)
 
         rideUpdatesPresenter.viewAttached()
     }
@@ -86,5 +94,16 @@ class RideUpdatesLayout : RelativeLayout, RideUpdatesView {
         statusTextView?.visibility = View.INVISIBLE
         pickUpAddressTextView?.visibility = View.INVISIBLE
         dropOffAddressTextView?.visibility = View.INVISIBLE
+    }
+
+    override fun updateBearingNavigation(vehicleLocation: LatLng) {
+        val newLocation = vehicleLocation.convertToLocation()
+        if (previousVehicleLocation != null) {
+            val bearing = previousVehicleLocation?.bearingTo(newLocation) ?: 0f
+            bearingImageView?.apply {
+                animate().rotation(bearing).start()
+            }
+        }
+        previousVehicleLocation = newLocation
     }
 }
