@@ -1,38 +1,55 @@
 # Mobile Code Challenge Android Solution
 
-This is a partial solution for the mobile code challenge, on the basis of which you should be able to solve the requirements of the code challenge.
+### Installation
+
+1. Open Project in Android Studio
+2. Add Google API Key to `google_maps_api.xml`
+3. Run `app` configuration on device or emulator
 
 
-We have built the basic architecture, which is close to the one used in our actual app.
-Based on this framework we expect you to implement a solution that satisfies 
-the requirements listed in the [mobile code challenge](https://github.com/door2door-io/d2d-code-challenges/tree/master/mobile). 
-Feel free to add more things, but it is not required in order to have your code challenge accepted.
+### Tested devices
 
-## Project setup
+* Samsung Galaxy S7
 
-Import the project using Android studio. Go to `google_maps_api.xml` and follow the instructions to 
-create a Google Maps API key and paste it there.
+### Implementation
 
-## Some tips on how to work with the existing code
+The design pattern used in this project is the MVP (Model-View-Presenter). The data flow is based around three components.
 
-Use the methods from `MainScreenInteractor` to get Observable streams of the events coming 
-from the WebSocket endpoint (see [documentation](https://d2d-frontend-code-challenge.herokuapp.com/docs)) 
-and display them in a way you see fit. There is an example on how to subscribe to an Observable stream 
-in the `RideUpdatesPresenter` implementation. If you have not worked with RxJava before, don't be intimidated.
-We don't expect you to understand everything and become an expert, but rather want to see how you can work with 
-it based on a given example.
+* _Model_: are the entities and business rules
+* _View_: is the UI component
+* _Presenter_: is the middleware between model and view
 
-In the `MapLayout` make use of the existing private methods to handle marker animation.
-We have provided a vehicle icon which you can use, or feel free to add your own image or use 
-the basic marker without an icon.
+View and Presenter conform to their corresponding interface and communicate with each other via it. 
 
-Implement your own design for the `feature_ride_updates` layout. You can make use of the 
-colours and styles we have provided or add your own. Make sure to display all the relevant 
-information.
+The concrete implementation in the application is:
 
-## Resources
+The `BookingWebSocket` connects to the WebSocket provided by Door2Door and receives `Events`, which are parsed with the third-party library `Moshi`. The `BookingWebSocket` differentiates between the events and creates Observables for each of them. The `MainScreenInteractor` is the centerpiece of all presenters. Each feature (RideUpdates, MapFeature) implements a presenter which receives the `Observable` from the `MainScreenInteractor`, who is connected to the `BookingWebSocket`. The presenter has the corresponding View Interface injected and can call methods to present data on the UI.
 
-* Kotlin documentation and tutorials - https://kotlinlang.org
-* Rx documentation - http://reactivex.io/
-* RxJava - https://github.com/ReactiveX/RxJava
+While implementing the challenge I tried to do my best to follow the MVP pattern and extend the given structure.
+
+##### MapFeature
+
+Main functions of the `MapPresenter`:
+
+`subscribeToVehicleLocationUpdates()` &rightarrow; In `.subscribe(...)` the `updateVehicleLocation` method of the MapView is executed. In the implementation of the `MapView` the vehicle marker then is animated and moves to the new location.
+
+`subscribeToIntermediateStopsUpdates()` &rightarrow; In the `subscribe(...)` the `updateIntermediateStops` method of the MapView is executed. In the implementation of the `MapView` the old intermediate stops are removed, and the new ones are displayed.
+
+`subscribeToBookingStatusUpdates()` &rightarrow; This method is needed to either mark your own pick up and drop off address, or clear the map. Both options are handled by the corresponding methods in the MapView implementation. The decision is based on the status of the booking. 
+
+##### RideUpdates
+
+Main functions of the `RideUpdatesPresenter`:
+
+`subscribeToBookingStatusUpdates()` &rightarrow; This method is needed to either display your own pick up and drop off address, or clear all UI components. Both options are handled by the corresponding methods in the RideUpdatesView implementation. The decision is based on the status of the booking. 
+
+`subscribeToVehicleLocationUpdates()` &rightarrow;  In `.subscribe(...)` the `updateBearingNavigation` method of the RideUpdatesView is executed. In the implementation of the `RideUpdatesView` the current vehicle rotation is calculated and is indicated by an arrow image.
+
+### Missing
+
+* Rotating the map causes the bearing navigation to be incorrect
+* UI Tests
+* Offline Warning
+
+
 
